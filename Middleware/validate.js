@@ -17,3 +17,12 @@ exports.validateLogin = (data) => {
     })//.options({ allowUnknown: true });
     return schema.validate(data);
 }
+
+exports.addCourse = (data) => {
+    const schema = joi.object().keys({
+        name: joi.string().min(5).max(50).required(),
+        price: joi.string().required(),
+        title: joi.string().min(20).max(100).required(),
+    })//.options({ allowUnknown: true });
+    return schema.validate(data);
+}

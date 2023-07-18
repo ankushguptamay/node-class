@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const verifyAdminToken = (req, res, next) => {
     //let token = req.headers.token;
     const authHeader = req.headers.authorization || req.headers.Authorization;
-    console.log("Token........." + authHeader);
+    // console.log("Token........." + authHeader);
     if (!authHeader?.startsWith('Bearer ')) return res.sendStatus(401);
     const token = authHeader.split(' ')[1];
     jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
@@ -12,7 +12,7 @@ const verifyAdminToken = (req, res, next) => {
                 message: 'Unauthorized or Token Expired! Login Again!'
             });
         }
-        console.log(decoded);
+        // console.log(decoded);
         req.admin = decoded;
         next();
     }
