@@ -21,6 +21,7 @@ db.sequelize = sequelize;
 db.admin = require("./adminModel")(sequelize, Sequelize);
 db.courseDocument = require("./courseDocumentModel")(sequelize, Sequelize);
 db.course = require("./courseModel")(sequelize, Sequelize);
+db.user = require("./userModel")(sequelize, Sequelize);
 
 db.admin.hasMany(db.course, {foreignKey: "adminId", as: "adminCourse" }); // get course from admin
 db.course.belongsTo(db.admin, {foreignKey: "adminId", as: "publisher" }); // get admin from course

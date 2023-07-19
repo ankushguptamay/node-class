@@ -4,6 +4,7 @@ const Admin = db.admin;
 const CourseDocument = db.courseDocument;
 const { addCourse } = require('../Middleware/validate')
 
+// for admin
 exports.addCourse = async (req, res) => {
     try {
         if (!req.file) {
@@ -12,46 +13,11 @@ exports.addCourse = async (req, res) => {
                 message: "Secect One thumbnail!"
             });
         }
-        const { error } = addCourse(req.body); exports.addCourse = async (req, res) => {
-            try {
-                if (!req.file) {
-                    return res.status(400).send({
-                        success: false,
-                        message: "Secect One thumbnail!"
-                    });
-                }
-                const { error } = addCourse(req.body);
-                if (error) {
-                    console.log(error);
-                    return res.status(400).send(error.details[0].message)
-                }
-                console.log(req.file);
-                const adminId = req.admin.id;
-                const { name, title, price } = req.body;
-                await Course.create({
-                    name: name,
-                    title: title,
-                    price: price,
-                    adminId: adminId,
-                    thumbNail: req.file.path
-                });
-                res.send({
-                    success: true,
-                    message: "Course Added successfully!"
-                });
-            } catch (e) {
-                console.log(e);
-                res.send({
-                    success: false,
-                    message: e
-                });
-            }
-        }
+        const { error } = addCourse(req.body);
         if (error) {
             console.log(error);
             return res.status(400).send(error.details[0].message)
         }
-        console.log(req.file);
         const adminId = req.admin.id;
         const { name, title, price } = req.body;
         await Course.create({
@@ -74,7 +40,8 @@ exports.addCourse = async (req, res) => {
     }
 }
 
-exports.getCourse = async (req, res) => {
+// for admin
+exports.getAdminCourse = async (req, res) => {
     try {
         const id = req.admin.id;
         const course = await Admin.findAll({
@@ -83,11 +50,7 @@ exports.getCourse = async (req, res) => {
 
             include: [{
                 model: Course,
-                as: "adminCourse",
-                include: [{
-                    model: CourseDocument,
-                    as: 'courseDocument',
-                }]
+                as: "adminCourse"
             }]
         });
         res.send({
@@ -104,13 +67,14 @@ exports.getCourse = async (req, res) => {
     }
 }
 
-exports.getAdminCourse = async (req, res) => {
+// for public
+exports.getAllCourses = async (req, res) => {
     try {
         const course = await Course.findAll({
             include: [{
                 model: Admin,
                 as: "publisher",
-                attributes: { exclude: ['password'] }
+                attributes: ["id", "name"]
             }]
         });
         res.send({
@@ -127,6 +91,7 @@ exports.getAdminCourse = async (req, res) => {
     }
 }
 
+// for admin
 exports.addCourseDocument = async (req, res) => {
     try {
         if (req.files <= 0) {
@@ -148,6 +113,30 @@ exports.addCourseDocument = async (req, res) => {
         res.send({
             success: true,
             message: "Document Added successfully!"
+        });
+    } catch (e) {
+        console.log(e);
+        res.send({
+            success: false,
+            message: e
+        });
+    }
+}
+
+// get course document for admin
+exports.getCourseDocumentForAdmin = async (req, res) => {
+    try {
+        const courseDocument = await CourseDocument.findOne({
+            where: { id: req.params.id },
+            include: [{
+                model: CourseDocument,
+                as: "courseDocument"
+            }]
+        });
+        res.send({
+            success: true,
+            message: "Course Document fetched!",
+            data: courseDocument
         });
     } catch (e) {
         console.log(e);

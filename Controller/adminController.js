@@ -122,13 +122,12 @@ exports.loginAdmin = async (req, res) => {
     }
 }
 
-// for admin
 exports.getAdmin = async (req, res) => {
     try {
         const admin = await Admin.findAll();
         res.send({
             success: true,
-            message: "admin fetched!",
+            message: "Admin fetched!",
             data: admin
         });
     } catch (e) {
@@ -150,12 +149,12 @@ exports.getAdminByToken = async (req, res) => {
         if (!admin) {
             return res.status(400).send({
                 success: false,
-                message: "admin is not present!"
+                message: "Admin is not present!"
             });
         }
         res.send({
             success: true,
-            message: "admin Created!",
+            message: "Admin Fetched!",
             data: admin
         });
     } catch (e) {
@@ -170,48 +169,21 @@ exports.getAdminByToken = async (req, res) => {
 exports.updateAdmin = async (req, res) => {
     try {
         const admin = await Admin.findOne({
-            where: { id: req.params.id }
+            where: { id: req.admin.id }
         });
         if (!admin) {
             return res.status(400).send({
                 success: false,
-                message: "admin is not present!"
+                message: "Admin is not present!"
             });
         }
-        const { name, email, mobileNumber } = req.body;
+        const { name} = req.body;
         await admin.update({
-            name: name,
-            email: email,
-            MobileNumber: mobileNumber
+            name: name
         })
         res.send({
             success: true,
-            message: "admin updated!"
-        });
-    } catch (e) {
-        console.log(e);
-        res.send({
-            success: false,
-            message: e
-        });
-    }
-}
-
-exports.deleteAdmin = async (req, res) => {
-    try {
-        const admin = await Admin.findOne({
-            where: { id: req.params.id }
-        });
-        if (!admin) {
-            return res.status(400).send({
-                success: false,
-                message: "admin is not present!"
-            });
-        }
-        await admin.destroy();
-        res.send({
-            success: true,
-            message: "admin destroied!"
+            message: "Admin updated!"
         });
     } catch (e) {
         console.log(e);
