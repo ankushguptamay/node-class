@@ -128,7 +128,7 @@ exports.getAllUser = async (req, res) => {
         res.send({
             success: true,
             message: "User fetched!",
-            data: User
+            data: user
         });
     } catch (e) {
         console.log(e);

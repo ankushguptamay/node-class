@@ -126,8 +126,8 @@ exports.addCourseDocument = async (req, res) => {
 // get course document for admin
 exports.getCourseDocumentForAdmin = async (req, res) => {
     try {
-        const courseDocument = await CourseDocument.findOne({
-            where: { id: req.params.id },
+        const courseDocument = await Course.findOne({
+            where: { id: req.params.courseId },
             include: [{
                 model: CourseDocument,
                 as: "courseDocument"

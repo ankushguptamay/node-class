@@ -22,14 +22,18 @@ db.admin = require("./adminModel")(sequelize, Sequelize);
 db.courseDocument = require("./courseDocumentModel")(sequelize, Sequelize);
 db.course = require("./courseModel")(sequelize, Sequelize);
 db.user = require("./userModel")(sequelize, Sequelize);
+db.user_Course = require("./user_CourseModel")(sequelize, Sequelize);
 
-db.admin.hasMany(db.course, {foreignKey: "adminId", as: "adminCourse" }); // get course from admin
-db.course.belongsTo(db.admin, {foreignKey: "adminId", as: "publisher" }); // get admin from course
+db.admin.hasMany(db.course, { foreignKey: "adminId", as: "adminCourse" }); // get course from admin
+db.course.belongsTo(db.admin, { foreignKey: "adminId", as: "publisher" }); // get admin from course
 
-db.course.hasMany(db.courseDocument, {foreignKey: "courseId", as: "courseDocument" });
-db.courseDocument.belongsTo(db.admin, {foreignKey: "courseId", as: "course" });
+db.course.hasMany(db.courseDocument, { foreignKey: "courseId", as: "courseDocument" });
+db.courseDocument.belongsTo(db.admin, { foreignKey: "courseId", as: "course" });
 
-db.admin.hasMany(db.courseDocument, {foreignKey: "adminId", as: "courseDocument" });
-db.courseDocument.belongsTo(db.admin, {foreignKey: "adminId", as: "publisher" }); 
+db.admin.hasMany(db.courseDocument, { foreignKey: "adminId", as: "courseDocument" });
+db.courseDocument.belongsTo(db.admin, { foreignKey: "adminId", as: "publisher" });
+
+db.user.belongsToMany(db.course, { through: "user_Course", as: "course" });
+db.course.belongsToMany(db.user, { through: "user_Course", as: "user" });
 
 module.exports = db;
