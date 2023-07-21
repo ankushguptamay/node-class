@@ -2,7 +2,8 @@ const db = require('../Model');
 const Course = db.course;
 const Admin = db.admin;
 const CourseDocument = db.courseDocument;
-const { addCourse } = require('../Middleware/validate')
+const { addCourse } = require('../Middleware/validate');
+const { deleteSingleFile, deleteMultiFile } = require('../Util/deleteFile');
 
 // for admin
 exports.addCourse = async (req, res) => {
@@ -136,6 +137,102 @@ exports.getCourseDocumentForAdmin = async (req, res) => {
         res.send({
             success: true,
             message: "Course Document fetched!",
+            data: courseDocument
+        });
+    } catch (e) {
+        console.log(e);
+        res.send({
+            success: false,
+            message: e
+        });
+    }
+}
+
+exports.updateCourse = async (req, res) => {
+    try {
+        const { name, title, price } = req.body;
+        const course = await Course.findOne({
+            where: { id: req.params.courseId }
+        });
+        if (!course) {
+            return res.status(400).send({
+                success: false,
+                message: "Course is not present!"
+            });
+        }
+        let file = course.thumbNail;
+        if (req.file) {
+            if (course.thumbNail) {
+                deleteSingleFile(course.thumbNail);
+            }
+            file = req.file.path;
+        }
+        await course.update({
+            name: name,
+            title: title,
+            price: price,
+            thumbNail: file
+        })
+        res.send({
+            success: true,
+            message: "Course updated!"
+        });
+    } catch (e) {
+        console.log(e);
+        res.send({
+            success: false,
+            message: e
+        });
+    }
+}
+
+exports.deleteCourse = async (req, res) => {
+    try {
+        const course = await Course.findOne({
+            where: { id: req.params.courseId }
+        });
+        if (!course) {
+            return res.status(400).send({
+                success: false,
+                message: "Course is not present!"
+            });
+        }
+        const courseDocument = await CourseDocument.findAll({
+            where: {
+                courseId: req.params.courseId
+            }
+        });
+        const documentArray = [];
+        for (let i = 0; i < courseDocument.length; i++) {
+            documentArray.push(courseDocument[i].document);
+        }
+        if (course.thumbNail) {
+            deleteSingleFile(course.thumbNail);
+        }
+        if (documentArray.length > 0) {
+            deleteMultiFile(documentArray);
+        }
+        await course.destroy();
+        res.send({
+            success: true,
+            message: "Course Deleted!"
+        });
+    } catch (e) {
+        console.log(e);
+        res.send({
+            success: false,
+            message: e
+        });
+    }
+}
+
+exports.allDocumets = async (req, res) => {
+    try {
+        const courseDocument = await CourseDocument.findAll({
+        });
+        res.send({
+            success: true,
+            message: "Course Deleted!",
             data: courseDocument
         });
     } catch (e) {

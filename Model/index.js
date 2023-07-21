@@ -27,8 +27,8 @@ db.user_Course = require("./user_CourseModel")(sequelize, Sequelize);
 db.admin.hasMany(db.course, { foreignKey: "adminId", as: "adminCourse" }); // get course from admin
 db.course.belongsTo(db.admin, { foreignKey: "adminId", as: "publisher" }); // get admin from course
 
-db.course.hasMany(db.courseDocument, { foreignKey: "courseId", as: "courseDocument" });
-db.courseDocument.belongsTo(db.admin, { foreignKey: "courseId", as: "course" });
+db.course.hasMany(db.courseDocument, { foreignKey: "courseId", as: "courseDocument", onDelete: "CASCADE"});
+db.courseDocument.belongsTo(db.admin, { foreignKey: "courseId", as: "course", onDelete: "CASCADE" });
 
 db.admin.hasMany(db.courseDocument, { foreignKey: "adminId", as: "courseDocument" });
 db.courseDocument.belongsTo(db.admin, { foreignKey: "adminId", as: "publisher" });
