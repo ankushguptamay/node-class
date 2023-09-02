@@ -12,17 +12,14 @@ exports.registerAdmin = async (req, res) => {
         // validate body
         const { error } = validateRegistration(req.body);
         if (error) {
-            console.log(error);
+            // console.log(error);
             return res.status(400).send(error.details[0].message)
         }
         const { name, email, mobileNumber, password } = req.body;
 
         const isAdmin = await Admin.findOne({
             where: {
-                [Op.or]: [
-                    { email: email },
-                    { mobileNumber: mobileNumber }
-                ]
+                email: email
             }
         });
         if (isAdmin) {
@@ -70,7 +67,7 @@ exports.loginAdmin = async (req, res) => {
         // validate body
         const { error } = validateLogin(req.body);
         if (error) {
-            console.log(error);
+            // console.log(error);
             return res.status(400).send(error.details[0].message)
         }
         const { email, password } = req.body;
@@ -177,7 +174,7 @@ exports.updateAdmin = async (req, res) => {
                 message: "Admin is not present!"
             });
         }
-        const { name} = req.body;
+        const { name } = req.body;
         await admin.update({
             name: name
         })

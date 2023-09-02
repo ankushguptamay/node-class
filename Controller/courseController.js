@@ -95,7 +95,7 @@ exports.getAllCourses = async (req, res) => {
 // for admin
 exports.addCourseDocument = async (req, res) => {
     try {
-        if (req.files <= 0) {
+        if (req.files.length <= 0) {
             return res.status(400).send({
                 success: false,
                 message: "Secect atleast One file!"

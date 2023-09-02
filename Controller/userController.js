@@ -19,10 +19,8 @@ exports.registerUser = async (req, res) => {
 
         const isUser = await User.findOne({
             where: {
-                [Op.or]: [
-                    { email: email },
-                    { mobileNumber: mobileNumber }
-                ]
+                email: email
+
             }
         });
         if (isUser) {
@@ -124,12 +122,78 @@ exports.loginUser = async (req, res) => {
 
 exports.getAllUser = async (req, res) => {
     try {
-        const user = await User.findAll();
-        res.send({
-            success: true,
-            message: "User fetched!",
-            data: user
-        });
+        const { page, search, firstName, lastName } = req.query;
+        const limit = parseInt(req.query.limit) || 5;
+        let offSet = 0;
+        let currentPage = 1;
+        if (page) {
+            offSet = (parseInt(page) - 1) * limit;
+            currentPage = parseInt(page);
+        }
+        const condition = [];
+        if (firstName) {
+            condition.push({ name: { [Op.startsWith]: firstName } });
+        }
+        if (lastName) {
+            condition.push({ name: { [Op.endsWith]: lastName } });
+        }
+        if (search) {
+            condition.push({
+                [Op.or]: [
+                    { name: { [Op.substring]: search } },
+                    { email: { [Op.substring]: search } },
+                    { mobileNumber: { [Op.substring]: search } }
+                ]
+            })
+        }
+        if (condition.length > 0) {
+            const countAllUser = await User.count({
+                where: {
+                    [Op.and]: [
+                        condition
+                    ]
+                }
+            });
+            const user = await User.findAll({
+                limit: limit,
+                offset: offSet,
+                order: [
+                    ["createdAt", "ASC"]
+                ],
+                where: {
+                    [Op.and]: [
+                        condition
+                    ]
+                }
+            });
+            const totalPage = Math.ceil(countAllUser / limit);
+            return res.send({
+                success: true,
+                message: "User fetched!",
+                data: user,
+                currentPage: currentPage,
+                totalPage: totalPage
+            });
+
+        } else {
+            const countAllUser = await User.count();
+            const user = await User.findAll({
+                limit: limit,
+                offset: offSet,
+                order: [
+                    ["createdAt", "ASC"]
+                ]
+            });
+            const totalPage = Math.ceil(countAllUser / limit);
+            return res.send({
+                success: true,
+                message: "User fetched!",
+                data: user,
+                currentPage: currentPage,
+                totalPage: totalPage
+            });
+        }
+
     } catch (e) {
         console.log(e);
         res.send({

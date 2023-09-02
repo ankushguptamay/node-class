@@ -26,7 +26,7 @@ app.use('/api/admin', admin);
 app.use('/api/user', user);
 
 app.use("/", (req, res) => {
-    res.send("<h1>hello!</h1>");
+    res.send("hello!");
 });
 
 const PORT = process.env.PORT
